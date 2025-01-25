@@ -21,6 +21,8 @@ services:
     depends_on:
       - db
     environment:
+      - SECRET_KEY=YOUR_SECRET_KEY
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydatabase
     ports:
       - "8000:8000"

@@ -1,5 +1,5 @@
+import os
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
 from app.dependencies import get_db
 from app.users.schemas import TokenData
 from fastapi import HTTPException, status, Depends
@@ -12,9 +12,9 @@ from users.models import User
 import logging
 # Configure logging
 logger = logging.getLogger(__name__)
-SECRET_KEY = "YOUR_SECRET_KEY"  # Replace with your own secret key (e.g., a long random string)
-ALGORITHM = "HS256"             # JWT encryption algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 # A password hashing context using bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
