@@ -1,15 +1,16 @@
-from sqlalchemy import Column, Integer, String, Boolean
+import sqlalchemy as sa
+from sqlalchemy import Column
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import UUID
+
 
 Base = declarative_base()
 
-
-
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    first_name = Column(String)
-    last_name = Column(String)
-    email = Column(String)
-    hashed_password = Column(String)
-    disabled = Column(Boolean, default=False)
+    id = Column(UUID, primary_key=True, unique=True, server_default=sa.text("gen_random_uuid()"))
+    first_name = Column(sa.String)
+    last_name = Column(sa.String)
+    email = Column(sa.String)
+    hashed_password = Column(sa.String)
+    disabled = Column(sa.Boolean, default=False)

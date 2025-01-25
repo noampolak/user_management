@@ -1,9 +1,8 @@
-import hashlib
 import re
-from typing_extensions import Annotated
 
 from typing import Optional
-from pydantic import BaseModel, BeforeValidator, EmailStr
+from uuid import UUID
+from pydantic import BaseModel, EmailStr
 
 
 def validate_password(password: str) -> str:
@@ -26,23 +25,26 @@ class Token(BaseModel):
     token_type: str
 
 class UserBase(BaseModel):
-    email: EmailStr
     first_name: str
     last_name: str
-
-class UserCreate(UserBase):
-    password: str
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+class UserCreate(UserBase, UserLogin):
+    pass
 
-class UserUpdate(UserBase):
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     password: Optional[str] = None
+    disabled: Optional[bool] = None
 
 class User(UserBase):
-    id: int
+    id: UUID
     disabled: bool
+    email: EmailStr
 
     class Config:
         from_attributes = True
