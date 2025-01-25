@@ -1,7 +1,8 @@
 # app/database.py
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
 
 # Example: postgresql://user:password@host:port/dbname
 DATABASE_URL = os.getenv(

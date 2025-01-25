@@ -1,18 +1,15 @@
 import logging
 from datetime import timedelta
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from security import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    auth_user,
-    authenticate_user,
-    create_access_token,
-    get_password_hash,
-)
-from users.schemas import UserCreate, UserLogin, Token, User, UserUpdate
+
 from dependencies import get_db
+from fastapi import APIRouter, Depends, HTTPException
+from security import (ACCESS_TOKEN_EXPIRE_MINUTES, auth_user,
+                      authenticate_user, create_access_token,
+                      get_password_hash)
 from sqlalchemy.orm import Session
 from users.models import User as UserModel
+from users.schemas import Token, User, UserCreate, UserLogin, UserUpdate
 
 # Configure logging
 logger = logging.getLogger(__name__)

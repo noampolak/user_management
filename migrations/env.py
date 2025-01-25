@@ -1,9 +1,7 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 from app.database import DATABASE_URL
 
@@ -26,8 +24,6 @@ target_metadata = None
 
 # imports below are needed for autogeneration
 from app.users import models as _
-
-
 
 config = context.config
 

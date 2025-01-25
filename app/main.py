@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
-from app.logging_config import setup_logging
 from users.routes import router as users_router
+
+from app.logging_config import setup_logging
 
 
 def custom_openapi(app: FastAPI):

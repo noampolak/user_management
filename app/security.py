@@ -1,15 +1,16 @@
+import logging
 import os
 from datetime import datetime, timedelta, timezone
-from app.dependencies import get_db
-from app.users.schemas import TokenData
-from fastapi import HTTPException, status, Depends
-from sqlalchemy.orm import Session
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 from users.models import User
-import logging
+
+from app.dependencies import get_db
+from app.users.schemas import TokenData
 
 # Configure logging
 logger = logging.getLogger(__name__)
