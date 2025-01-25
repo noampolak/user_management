@@ -76,7 +76,7 @@ API documentation: http://localhost:8000/docs
     "disabled": false
   }
   ```
-- `GET /users` - List all users (admin only)
+- `GET /users` - List all users (admin only and only for testing- TODO: remove)
 
 ## Authentication
 
