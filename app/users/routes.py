@@ -2,7 +2,13 @@ import logging
 from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from security import ACCESS_TOKEN_EXPIRE_MINUTES, auth_user, authenticate_user, create_access_token, get_password_hash
+from security import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    auth_user,
+    authenticate_user,
+    create_access_token,
+    get_password_hash,
+)
 from users.schemas import UserCreate, UserLogin, Token, User, UserUpdate
 from dependencies import get_db
 from sqlalchemy.orm import Session
@@ -13,8 +19,9 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
 @router.post("/register")
-def register(user: UserCreate,db: Session = Depends(get_db)):
+def register(user: UserCreate, db: Session = Depends(get_db)):
     logger.info(f"Attempting to register new user with email: {user.email}")
     # Check if user already exists
     existing_user = db.query(UserModel).filter(UserModel.email == user.email).first()
@@ -32,13 +39,14 @@ def register(user: UserCreate,db: Session = Depends(get_db)):
     )
     db.add(user)
     db.commit()
-    db.refresh(user)
     logger.info(f"Successfully registered new user with email: {user.email}")
     return {"message": "User registered successfully"}
 
-@router.post("/login",
-            response_model=Token,
-            )
+
+@router.post(
+    "/login",
+    response_model=Token,
+)
 def login(userLoginData: UserLogin, db: Session = Depends(get_db)):
     logger.info(f"Login attempt for user: {userLoginData.email}")
     user = authenticate_user(db, userLoginData.email, userLoginData.password)
@@ -55,7 +63,11 @@ def login(userLoginData: UserLogin, db: Session = Depends(get_db)):
     openapi_extra={"security": [{"BearerAuth": []}]},
     response_model=User,
 )
-def update(userUpdateData: UserUpdate, db: Session = Depends(get_db) , user: User = Depends(auth_user)):
+def update(
+    userUpdateData: UserUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(auth_user),
+):
     logger.info(f"Attempting to update user: {user.email}")
     user = db.query(UserModel).filter_by(id=user.id).first()
     if userUpdateData.first_name:
@@ -71,7 +83,6 @@ def update(userUpdateData: UserUpdate, db: Session = Depends(get_db) , user: Use
     logger.info(f"Successfully updated user: {user.email}")
     return user
 
-    
 
 @router.get("/users", response_model=List[User])
 def get_users(db: Session = Depends(get_db)):
@@ -79,10 +90,13 @@ def get_users(db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/profile", openapi_extra={"security": [{"BearerAuth": []}]},
+@router.get(
+    "/profile",
+    openapi_extra={"security": [{"BearerAuth": []}]},
     dependencies=[Depends(auth_user)],
-    response_model=User)
-def get_user(db: Session = Depends(get_db) , user: User = Depends(auth_user)):
+    response_model=User,
+)
+def get_user(db: Session = Depends(get_db), user: User = Depends(auth_user)):
     user = db.query(UserModel).filter_by(id=user.id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

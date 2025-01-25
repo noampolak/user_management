@@ -3,6 +3,7 @@ from fastapi.openapi.utils import get_openapi
 from app.logging_config import setup_logging
 from users.routes import router as users_router
 
+
 def custom_openapi(app: FastAPI):
     """
     Adds a 'BearerAuth' security scheme to the OpenAPI schema
@@ -17,11 +18,7 @@ def custom_openapi(app: FastAPI):
         routes=app.routes,
     )
     openapi_schema["components"]["securitySchemes"] = {
-        "BearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
-        }
+        "BearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
     }
     # Add global security if you want every endpoint to require it by default
     # openapi_schema["security"] = [{"BearerAuth": []}]
@@ -37,5 +34,6 @@ def create_app() -> FastAPI:
     # Overwrite the default OpenAPI generation
     app.openapi = lambda: custom_openapi(app)
     return app
+
 
 app = create_app()

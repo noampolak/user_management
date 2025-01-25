@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 def setup_logging():
     # Create root logger
     root_logger = logging.getLogger()
@@ -11,7 +12,9 @@ def setup_logging():
     handler.setLevel(logging.INFO)
 
     # Create a formatting for the logs
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     handler.setFormatter(formatter)
 
     # Add the handler to the root logger

@@ -10,6 +10,7 @@ import jwt
 from passlib.context import CryptContext
 from users.models import User
 import logging
+
 # Configure logging
 logger = logging.getLogger(__name__)
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -23,7 +24,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password, hashed_password):
-    logger.info(f"verifying password {plain_password} with hashed password {hashed_password}")
+    logger.info(
+        f"verifying password {plain_password} with hashed password {hashed_password}"
+    )
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -31,14 +34,14 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-
 def get_user(db_session, email: str):
     user = db_session.query(User).filter(User.email == email).first()
     return user
 
+
 def authenticate_user(db_session, email: str, password: str):
     user = get_user(db_session, email)
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,7 +49,7 @@ def authenticate_user(db_session, email: str, password: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
     logger.info(f"user {user.email} found for authentication")
-    
+
     if not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,6 +58,7 @@ def authenticate_user(db_session, email: str, password: str):
         )
     logger.info(f"user {user.email} authenticated")
     return user
+
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -70,14 +74,17 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 security_scheme = HTTPBearer()
 
 
-async def auth_user(credentials: HTTPAuthorizationCredentials = Depends(security_scheme), db: Session = Depends(get_db)):
+async def auth_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+    db: Session = Depends(get_db),
+):
     token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")

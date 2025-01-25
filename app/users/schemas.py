@@ -1,8 +1,6 @@
-import re
-
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 def validate_password(password: str) -> str:
@@ -15,24 +13,26 @@ def validate_password(password: str) -> str:
     return password
 
 
-def validate_email(email: str) -> str:
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        raise ValueError("Invalid email address")
-    return email
-
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 
 class UserBase(BaseModel):
     first_name: str
     last_name: str
 
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
 class UserCreate(UserBase, UserLogin):
-    pass
+    @field_validator("password")
+    @classmethod
+    def validate_user_password(cls, v):
+        return validate_password(v)
 
 
 class UserUpdate(BaseModel):
@@ -40,6 +40,14 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     password: Optional[str] = None
     disabled: Optional[bool] = None
+
+    @field_validator("password")
+    @classmethod
+    def validate_update_password(cls, v):
+        if v is not None:  # Only validate if password is provided
+            return validate_password(v)
+        return v
+
 
 class User(UserBase):
     id: UUID
@@ -49,8 +57,10 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+
 class UserInDB(UserCreate):
     hashed_password: str
+
 
 class TokenData(BaseModel):
     email: str | None = None
